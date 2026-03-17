@@ -3,7 +3,7 @@ name = "wyrmhole"
 version = "0.3.2"
 description = "A lightweight GUI for magic-wormhole.rs - secure file transfer using Tauri and React"
 authors = ["Cwas"]
-edition = "2026"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
