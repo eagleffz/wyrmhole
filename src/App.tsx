@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useState, useRef } from "react";
 import { Toaster, toast } from "sonner";
 import ReceiveFileCard from "./RecieveFileCardComponent";
@@ -83,6 +84,7 @@ function App() {
   const [defaultFolderNameFormat, setDefaultFolderNameFormat] =
     useState<string>("#-files-via-wyrmhole");
   const [connectingCodes, setConnectingCodes] = useState<Map<string, string>>(new Map()); // Map<id, code>
+  const [isDragging, setIsDragging] = useState(false);
   const cancelledConnections = useRef<Set<string>>(new Set()); // Track cancelled connection IDs
   const connectionCodeToasts = useRef<Map<string | number, string>>(new Map()); // Map<toastId, code>
 
@@ -491,6 +493,35 @@ function App() {
     get_default_folder_name_format();
   }, []);
 
+  // Listen for native file drag-and-drop events
+  useEffect(() => {
+    const appWindow = getCurrentWebviewWindow();
+    const unlisten = appWindow.onDragDropEvent((event) => {
+      if (event.payload.type === "enter" || event.payload.type === "over") {
+        setIsDragging(true);
+      } else if (event.payload.type === "leave") {
+        setIsDragging(false);
+      } else if (event.payload.type === "drop") {
+        setIsDragging(false);
+        const paths = event.payload.paths;
+        if (paths.length > 0) {
+          setSelectedFiles((prev) => {
+            if (!prev) return paths;
+            const merged = [...prev];
+            for (const p of paths) {
+              if (!merged.includes(p)) merged.push(p);
+            }
+            return merged;
+          });
+        }
+      }
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
   // Listen for received file added event - updates table automatically
   useEffect(() => {
     console.log("Listening for received-file-added event");
@@ -780,6 +811,17 @@ function App() {
     <div className="app-container h-screen glass-background flex flex-col overflow-hidden">
       <Toaster position="bottom-right" />
 
+      {/* Inset border glow when dragging files over window */}
+      <div
+        className="pointer-events-none fixed inset-0 z-50 rounded-lg transition-all duration-200"
+        style={{
+          boxShadow: isDragging
+            ? "inset 0 0 0 4px rgba(59, 130, 246, 0.7), inset 0 0 40px 0 rgba(59, 130, 246, 0.15), inset 0 0 80px 0 rgba(59, 130, 246, 0.06)"
+            : "none",
+          opacity: isDragging ? 1 : 0,
+        }}
+      />
+
       <nav className="glass-navbar flex-shrink-0 z-10">
         <div className="px-3 sm:px-6 py-2 sm:py-2.5 flex justify-between items-center">
           <h1 className="text-lg sm:text-2xl xl:text-3xl font-bold flex items-center select-none gap-1 sm:gap-2 text-gray-800">
@@ -1021,20 +1063,28 @@ function App() {
                   {!selectedFiles ? (
                     <label
                       htmlFor="File"
-                      className="flex-1 flex flex-col items-center justify-center cursor-pointer border-2 border-dashed transition-all duration-200 rounded-2xl"
+                      className={`flex-1 flex flex-col items-center justify-center cursor-pointer border-2 border-dashed transition-all duration-200 rounded-2xl ${isDragging ? "scale-[1.02]" : ""}`}
                       style={{
-                        borderColor: "rgba(255, 255, 255, 0.3)",
-                        background: "rgba(255, 255, 255, 0.2)",
+                        borderColor: isDragging
+                          ? "rgba(59, 130, 246, 0.7)"
+                          : "rgba(255, 255, 255, 0.3)",
+                        background: isDragging
+                          ? "rgba(219, 234, 254, 0.4)"
+                          : "rgba(255, 255, 255, 0.2)",
                         backdropFilter: "blur(8px)",
                         WebkitBackdropFilter: "blur(8px)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
-                        e.currentTarget.style.background = "rgba(239, 246, 255, 0.3)";
+                        if (!isDragging) {
+                          e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                          e.currentTarget.style.background = "rgba(239, 246, 255, 0.3)";
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
-                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+                        if (!isDragging) {
+                          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                          e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+                        }
                       }}
                       onClick={select_files}
                     >
@@ -1044,7 +1094,7 @@ function App() {
                         viewBox="0 0 24 24"
                         strokeWidth="1.5"
                         stroke="currentColor"
-                        className="w-5 h-5 text-gray-400 mb-1"
+                        className={`w-5 h-5 mb-1 transition-colors ${isDragging ? "text-blue-500" : "text-gray-400"}`}
                       >
                         <path
                           strokeLinecap="round"
@@ -1052,8 +1102,8 @@ function App() {
                           d="M7.5 7.5h-.75A2.25 2.25 0 0 0 4.5 9.75v7.5a2.25 2.25 0 0 0 2.25 2.25h7.5a2.25 2.25 0 0 0 2.25-2.25v-7.5a2.25 2.25 0 0 0-2.25-2.25h-.75m0-3-3-3m0 0-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 0 1 2.25 2.25v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5a2.25 2.25 0 0 1-2.25-2.25v-.75"
                         />
                       </svg>
-                      <span className="text-xs xl:text-sm text-gray-600">
-                        Click to select files
+                      <span className={`text-xs xl:text-sm transition-colors ${isDragging ? "text-blue-600 font-medium" : "text-gray-600"}`}>
+                        {isDragging ? "Drop files here" : "Click or drag files here"}
                       </span>
                     </label>
                   ) : (
