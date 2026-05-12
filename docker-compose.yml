@@ -2,6 +2,7 @@ services:
   wyrmhole:
     image: ghcr.io/eagleffz/wyrmhole:main
     build: .
+    pull_policy: build
     ports:
       - "${PORT:-8080}:8080"
     volumes:
