@@ -762,10 +762,10 @@ async fn build_relay_hints(state: &Arc<AppState>) -> Vec<transit::RelayHint> {
     drop(settings);
 
     let mut urls = Vec::new();
-    if let Some(custom) = user_relay {
-        if let Ok(url) = custom.parse() {
-            urls.push(url);
-        }
+    if let Some(custom) = user_relay
+        && let Ok(url) = custom.parse()
+    {
+        urls.push(url);
     }
     if urls.is_empty() {
         urls.push(transit::DEFAULT_RELAY_SERVER.parse().unwrap());

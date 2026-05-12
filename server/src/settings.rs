@@ -27,13 +27,12 @@ impl AppSettings {
         let download_dir = data_dir.join("downloads");
         fs::create_dir_all(&download_dir).ok();
 
-        if settings_path.exists() {
-            if let Ok(content) = fs::read_to_string(&settings_path) {
-                if let Ok(settings) = serde_json::from_str::<AppSettings>(&content) {
-                    fs::create_dir_all(&settings.download_directory).ok();
-                    return settings;
-                }
-            }
+        if settings_path.exists()
+            && let Ok(content) = fs::read_to_string(&settings_path)
+            && let Ok(settings) = serde_json::from_str::<AppSettings>(&content)
+        {
+            fs::create_dir_all(&settings.download_directory).ok();
+            return settings;
         }
 
         let settings = AppSettings {

@@ -38,12 +38,11 @@ fn sent_files_path(data_dir: &Path) -> PathBuf {
 
 pub fn load_received_files(data_dir: &Path) -> Vec<ReceivedFile> {
     let path = received_files_path(data_dir);
-    if path.exists() {
-        if let Ok(content) = fs::read_to_string(&path) {
-            if let Ok(files) = serde_json::from_str::<Vec<ReceivedFile>>(&content) {
-                return files;
-            }
-        }
+    if path.exists()
+        && let Ok(content) = fs::read_to_string(&path)
+        && let Ok(files) = serde_json::from_str::<Vec<ReceivedFile>>(&content)
+    {
+        return files;
     }
     let _ = fs::write(&path, "[]");
     vec![]
@@ -51,12 +50,11 @@ pub fn load_received_files(data_dir: &Path) -> Vec<ReceivedFile> {
 
 pub fn load_sent_files(data_dir: &Path) -> Vec<SentFile> {
     let path = sent_files_path(data_dir);
-    if path.exists() {
-        if let Ok(content) = fs::read_to_string(&path) {
-            if let Ok(files) = serde_json::from_str::<Vec<SentFile>>(&content) {
-                return files;
-            }
-        }
+    if path.exists()
+        && let Ok(content) = fs::read_to_string(&path)
+        && let Ok(files) = serde_json::from_str::<Vec<SentFile>>(&content)
+    {
+        return files;
     }
     let _ = fs::write(&path, "[]");
     vec![]
@@ -84,20 +82,20 @@ pub fn add_sent_file(state: &Arc<AppState>, new_file: SentFile) -> Result<(), St
 
 pub fn get_received_files_json(data_dir: &Path) -> Vec<serde_json::Value> {
     let path = received_files_path(data_dir);
-    if let Ok(content) = fs::read_to_string(&path) {
-        if let Ok(files) = serde_json::from_str::<Vec<serde_json::Value>>(&content) {
-            return files;
-        }
+    if let Ok(content) = fs::read_to_string(&path)
+        && let Ok(files) = serde_json::from_str::<Vec<serde_json::Value>>(&content)
+    {
+        return files;
     }
     vec![]
 }
 
 pub fn get_sent_files_json(data_dir: &Path) -> Vec<serde_json::Value> {
     let path = sent_files_path(data_dir);
-    if let Ok(content) = fs::read_to_string(&path) {
-        if let Ok(files) = serde_json::from_str::<Vec<serde_json::Value>>(&content) {
-            return files;
-        }
+    if let Ok(content) = fs::read_to_string(&path)
+        && let Ok(files) = serde_json::from_str::<Vec<serde_json::Value>>(&content)
+    {
+        return files;
     }
     vec![]
 }

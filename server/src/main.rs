@@ -91,7 +91,7 @@ async fn handle_ws(socket: WebSocket, state: AppState) {
     loop {
         match rx.recv().await {
             Ok(msg) => {
-                if sender.send(Message::Text(msg.into())).await.is_err() {
+                if sender.send(Message::Text(msg)).await.is_err() {
                     break;
                 }
             }
