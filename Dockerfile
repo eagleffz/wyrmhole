@@ -27,7 +27,7 @@ RUN cd server && cargo build --release
 # Stage 3: Runtime image
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

@@ -1,14 +1,20 @@
 services:
   wyrmhole:
+    image: ghcr.io/eagleffz/wyrmhole:main
     build: .
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:8080"
     volumes:
       - wyrmhole-data:/data
-    environment:
-      - BIND_ADDR=0.0.0.0:8080
-      - DATA_DIR=/data
-      - STATIC_DIR=/app/dist
+    env_file:
+      - path: .env
+        required: false
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/settings"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
 
 volumes:
