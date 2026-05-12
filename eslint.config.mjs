@@ -6,8 +6,8 @@ import globals from "globals";
 
 export default [
   {
-    files: ["src/**/*.{ts,tsx}"],
-    ignores: ["dist/**", "node_modules/**", "src-tauri/target/**"],
+    files: ["web/src/**/*.{ts,tsx}"],
+    ignores: ["web/dist/**", "node_modules/**", "server/target/**"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -16,7 +16,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: "./tsconfig.json",
+        project: "./web/tsconfig.json",
       },
       globals: {
         ...globals.browser,

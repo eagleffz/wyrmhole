@@ -7,12 +7,23 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node
 node_modules
 dist
 dist-ssr
 *.local
 
-# Editor directories and files
+# Rust
+server/target/
+src-tauri/target/
+
+# Runtime data (local dev)
+data/
+.env
+.env.*
+!.env.example
+
+# Editor
 .vscode/*
 !.vscode/extensions.json
 .idea

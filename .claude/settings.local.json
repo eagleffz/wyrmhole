@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(cargo check *)",
+      "Bash(/opt/homebrew/Cellar/rust/1.95.0/bin/cargo check *)"
+    ]
+  }
+}

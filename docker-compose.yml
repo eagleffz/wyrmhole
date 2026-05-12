@@ -1,0 +1,15 @@
+services:
+  wyrmhole:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - wyrmhole-data:/data
+    environment:
+      - BIND_ADDR=0.0.0.0:8080
+      - DATA_DIR=/data
+      - STATIC_DIR=/app/dist
+    restart: unless-stopped
+
+volumes:
+  wyrmhole-data:

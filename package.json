@@ -4,34 +4,17 @@
   "version": "0.3.2",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri",
-    "lint": "eslint ./src --ext .ts,.tsx",
-    "lint:fix": "eslint ./src --ext .ts,.tsx --fix",
-    "fmt": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
-    "fmt:check": "prettier --check \"src/**/*.{ts,tsx,css,md}\"",
-    "fmt:rs": "cargo fmt --manifest-path src-tauri/Cargo.toml",
-    "lint:rs": "cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings",
-    "analyze": "node ./scripts/analyze-project.mjs"
-  },
-  "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-dialog": "^2.3.2",
-    "@tauri-apps/plugin-opener": "^2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "sonner": "^2.0.7",
-    "tailwindcss": "^4.1.11"
+    "dev": "npm run dev --prefix web",
+    "build": "npm run build --prefix web",
+    "preview": "npm run preview --prefix web",
+    "lint": "eslint web/src",
+    "lint:fix": "eslint web/src --fix",
+    "fmt": "prettier --write \"web/src/**/*.{ts,tsx,css,md}\"",
+    "fmt:check": "prettier --check \"web/src/**/*.{ts,tsx,css,md}\"",
+    "fmt:rs": "cargo fmt --manifest-path server/Cargo.toml",
+    "lint:rs": "cargo clippy --manifest-path server/Cargo.toml -- -D warnings"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
-    "@types/node": "^24.10.1",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.4",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
@@ -39,7 +22,6 @@
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "prettier": "^3.3.0",
-    "typescript": "~5.6.2",
-    "vite": "^6.0.3"
+    "typescript": "~5.6.2"
   }
 }
